@@ -7,10 +7,10 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
 
         System.out.print("Введіть перше число: ");
-        double num1 = scanner.nextDouble();
+        double num1 = scanner.nextDouble(); // Зчитуємо з консолі перше число
 
         System.out.print("Введіть друге число: ");
-        double num2 = scanner.nextDouble();
+        double num2 = scanner.nextDouble(); // Зчитуємо з консолі друге число
 
         System.out.println("1. Додавання (+)");
         System.out.println("2. Віднімання (-)");
@@ -18,11 +18,11 @@ public class Main {
         System.out.println("4. Ділення (/)");
 
         System.out.print("Виберіть номер операції: ");
-        int operation = scanner.nextInt();
+        int operation = scanner.nextInt();  // Зчитуємо з консолі номер операції
 
         double result = 0;
 
-        switch (operation) {
+        switch (operation) { // обробляємо номер операції
             case 1:
                 result = num1 + num2;
                 break;
@@ -33,7 +33,7 @@ public class Main {
                 result = num1 * num2;
                 break;
             case 4:
-                if (num2 != 0) {
+                if (num2 != 0) { // перевірка ділення на 0
                     result = num1 / num2;
                 } else {
                     System.out.println("Не можна ділити на 0.");
@@ -41,10 +41,10 @@ public class Main {
                 }
                 break;
             default:
-                System.out.println("Неправильна операція.");
+                System.out.println("Неправильна операція."); 
                 return;
         }
 
-        System.out.println("Результат: " + result);
+        System.out.println("Результат: " + result); // виведення результату алгортму
     }
 }
