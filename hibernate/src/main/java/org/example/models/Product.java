@@ -3,6 +3,7 @@ package org.example.models;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Data
 @Entity
@@ -23,6 +24,9 @@ public class Product {
     @ManyToOne
     @JoinColumn(name="category_id",nullable = false)
     private Category category;
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    private List<ProductImage> productsImages;
 
     @Override
     public String toString() {
