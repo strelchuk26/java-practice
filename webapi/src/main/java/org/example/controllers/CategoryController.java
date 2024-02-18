@@ -2,12 +2,14 @@ package org.example.controllers;
 
 import lombok.AllArgsConstructor;
 import org.example.dto.category.CategoryCreateDTO;
+import org.example.dto.category.CategoryEditDTO;
 import org.example.dto.category.CategoryItemDTO;
 import org.example.entities.CategoryEntity;
 import org.example.mapper.CategoryMapper;
 import org.example.repositories.CategoryRepository;
 import org.example.storage.FileSaveFormat;
 import org.example.storage.StorageService;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -44,5 +46,27 @@ public class CategoryController {
         } catch (Exception ex) {
             return  new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
+    }
 
-    }}
+    @PutMapping(value = "edit/{categoryId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<CategoryEntity> edit(@PathVariable Integer categoryId, @ModelAttribute CategoryEditDTO dto) {
+        try {
+            CategoryEntity existingCategory = categoryRepository.findById(categoryId)
+                    .orElseThrow(() -> new ChangeSetPersister.NotFoundException());
+
+            existingCategory.setName(dto.getName());
+            if (dto.getImage() != null) {
+                String imageName = storageService.SaveImage(dto.getImage(), FileSaveFormat.WEBP);
+                existingCategory.setImage(imageName);
+            }
+            existingCategory.setDescription(dto.getDescription());
+            existingCategory.setCreationTime(LocalDateTime.now());
+
+            categoryRepository.save(existingCategory);
+
+            return new ResponseEntity<>(existingCategory, HttpStatus.OK);
+        } catch (Exception ex) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+    }
+}
