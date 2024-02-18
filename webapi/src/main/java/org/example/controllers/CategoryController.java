@@ -69,4 +69,19 @@ public class CategoryController {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
     }
+
+    @DeleteMapping("delete/{categoryId}")
+    public ResponseEntity<Void> delete(@PathVariable Integer categoryId) {
+        try {
+            if (!categoryRepository.existsById(categoryId)) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+
+            categoryRepository.deleteById(categoryId);
+
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } catch (Exception ex) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
