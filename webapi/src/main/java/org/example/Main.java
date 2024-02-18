@@ -24,16 +24,7 @@ public class Main {
     CommandLineRunner runner(CategoryRepository repository, StorageService storageService) {
         return args -> {
             try {
-//            CategoryEntity category = new CategoryEntity();
-//            category.setName("Продукти");
-//            category.setDescription("Для усіх людей");
-//            category.setImage("product.jpg");
-//            category.setDateCreated(new Date());
-
-                //repository.save(category);
-
                 storageService.init();
-
             } catch (Exception ex) {
                 System.out.println("Помилка ініціалізації" + ex.getMessage());
             }

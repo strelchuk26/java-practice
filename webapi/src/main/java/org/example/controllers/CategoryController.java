@@ -1,6 +1,7 @@
 package org.example.controllers;
 
 import lombok.AllArgsConstructor;
+import net.coobird.thumbnailator.Thumbnails;
 import org.example.dto.category.CategoryCreateDTO;
 import org.example.dto.category.CategoryEditDTO;
 import org.example.dto.category.CategoryItemDTO;
@@ -15,8 +16,12 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @AllArgsConstructor
@@ -30,6 +35,18 @@ public class CategoryController {
     public ResponseEntity<List<CategoryItemDTO>> index() {
         List<CategoryItemDTO> list = categoryMapper.categoryListItemDTO(categoryRepository.findAll());
         return new ResponseEntity<>(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<CategoryItemDTO> getById(@PathVariable Integer id) {
+        Optional<CategoryEntity> categoryOptional = categoryRepository.findById(id);
+
+        if (categoryOptional.isPresent()) {
+            CategoryItemDTO categoryItemDTO = categoryMapper.categoryItemDTO(categoryOptional.get());
+            return new ResponseEntity<>(categoryItemDTO, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @PostMapping(value="create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -73,11 +90,27 @@ public class CategoryController {
     @DeleteMapping("delete/{categoryId}")
     public ResponseEntity<Void> delete(@PathVariable Integer categoryId) {
         try {
-            if (!categoryRepository.existsById(categoryId)) {
+            Optional<CategoryEntity> categoryOptional = categoryRepository.findById(categoryId);
+
+            if (!categoryOptional.isPresent()) {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
 
+            CategoryEntity category = categoryOptional.get();
+
+            String photoFileName = category.getImage();
+
             categoryRepository.deleteById(categoryId);
+
+            String uploadingPath = System.getProperty("user.dir") + "\\uploading";
+
+            String [] sizes = {"32", "150", "300", "600", "1200"};
+
+            for(var size : sizes) {
+                String photoWithSize = size + "_" + photoFileName;
+                Path photoPath = Paths.get(uploadingPath, photoWithSize);
+                Files.deleteIfExists(photoPath);
+            }
 
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (Exception ex) {
